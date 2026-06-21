@@ -1,95 +1,122 @@
 import React, { useEffect, useState } from "react";
-// import { getAllComplaints } from "../lib/api";
+import { getAllComplaints } from "../lib/api";
 
 const SeeComplaints = () => {
-  return (<h1>hello</h1>)
-}
-  /*const [complaints, setComplaints] = useState([]);
+  const [complaints, setComplaints] = useState([]);
+  const [selectedWard, setSelectedWard] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  // Database se data load karne ke liye function
+  useEffect(() => {
+    fetchComplaints();
+  }, []);
+
   const fetchComplaints = async () => {
     try {
-      setLoading(true);
-      setError(""); // Reset error on new fetch attempt
       const data = await getAllComplaints();
-      
-      // CRITICAL FIX: Ensure data is an array before setting state
-      if (data && Array.isArray(data)) {
-        setComplaints(data);
-      } else if (data && Array.isArray(data.complaints)) {
-        // If your backend nesting is inside a response property
-        setComplaints(data.complaints);
-      } else {
-        setComplaints([]);
-      }
+      setComplaints(data);
     } catch (err) {
-      setError(err.message || "Something went wrong while fetching data");
+      console.log(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Component load hote hi data chal jaye
-  useEffect(() => {
-    fetchComplaints();
-  }, []);
+  const filteredComplaints = selectedWard
+    ? complaints.filter(
+        (complaint) => complaint.ward === selectedWard
+      )
+    : complaints;
+
+  if (loading) {
+    return (
+      <div className="text-center mt-10 text-xl">
+        Loading...
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-pink-100 py-8 px-4 flex flex-col items-center">
-      <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-lg">
-        
-        <div className="flex justify-between items-center mb-6 border-b pb-3">
-          <h2 className="text-2xl font-bold text-gray-800">दर्ज शिकायतें (All Complaints)</h2>
-          <button 
-            onClick={fetchComplaints} 
-            disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-3 py-1 text-sm rounded transition flex items-center gap-1"
+    <div className="min-h-screen bg-pink-100 p-6">
+      <div className="max-w-4xl mx-auto">
+
+        <h1 className="text-3xl font-bold text-center mb-6">
+          All Complaints
+        </h1>
+
+        {/* Ward Filter */}
+        <div className="mb-6">
+          <label className="font-semibold mr-3">
+            Select Ward:
+          </label>
+
+          <select
+            value={selectedWard}
+            onChange={(e) =>
+              setSelectedWard(e.target.value)
+            }
+            className="border p-2 rounded"
           >
-            {loading ? "⏳ Loading..." : "🔄 Refresh"}
-          </button>
+            <option value="">All Wards</option>
+
+            {[1,2,3,4,5,6,7,8,9,10].map((ward) => (
+              <option
+                key={ward}
+                value={String(ward)}
+              >
+                Ward {ward}
+              </option>
+            ))}
+          </select>
         </div>
-*/
-//         {/* Loading State */}
-//         {loading && <p className="text-center text-gray-600 font-medium">डेटा लोड हो रहा है...</p>}
 
-//         {/* Error State */}
-//         {error && <p className="text-center text-red-500 font-medium">{error}</p>}
+        {/* Complaints */}
+        {filteredComplaints.length === 0 ? (
+          <div className="bg-white p-4 rounded shadow text-center">
+            No complaints found.
+          </div>
+        ) : (
+          filteredComplaints.map((complaint) => (
+            <div
+              key={complaint._id}
+              className="bg-white p-5 rounded-lg shadow-md mb-4"
+            >
+              <h2 className="text-xl font-bold mb-2">
+                Ward No. {complaint.ward}
+              </h2>
 
-//         {/* Empty State */}
-//         {!loading && complaints.length === 0 && !error && (
-//           <p className="text-center text-gray-500 py-8">अभी तक कोई शिकायत दर्ज नहीं की गई है।</p>
-//         )}
+              <p className="mb-2">
+                <strong>Name:</strong>{" "}
+                {complaint.name}
+              </p>
 
-//         {/* Complaints List Cards */}
-//         <div className="flex flex-col gap-4">
-//           {!loading && complaints.map((item) => (
-//             <div key={item._id || item.id} className="border-l-4 border-pink-500 bg-pink-50 p-4 rounded shadow-sm hover:shadow-md transition">
-//               <div className="flex justify-between items-start mb-2">
-//                 <h3 className="text-lg font-semibold text-gray-900">👤 {item.name || "Unknown"}</h3>
-//                 <span className="bg-pink-200 text-pink-800 text-xs font-semibold px-2.5 py-0.5 rounded">
-//                   📍 Ward: {item.ward || "N/A"}
-//                 </span>
-//               </div>
-              
-//               <p className="text-gray-700 mb-3 bg-white p-2 rounded border border-gray-100">
-//                 <strong>विवरण:</strong> {item.description || "कोई विवरण नहीं दिया गया है"}
-//               </p>
+              <p className="mb-2">
+                <strong>Problem:</strong>{" "}
+                {complaint.description}
+              </p>
 
-//               <div className="flex justify-between text-xs text-gray-500 font-medium">
-//                 <span>📞 {item.phone || "N/A"}</span>
-//                 <span>
-//                   📅 {item.createdAt ? new Date(item.createdAt).toLocaleString('hi-IN') : "N/A"}
-//                 </span>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
+              <p className="mb-2">
+                <strong>Phone:</strong>{" "}
+                {complaint.phone}
+              </p>
 
-//       </div>
-//     </div>
-//   );
-// };
+              <p>
+                <strong>Status:</strong>{" "}
+                <span
+                  className={`px-2 py-1 rounded text-white ${
+                    complaint.status === "Resolved"
+                      ? "bg-green-500"
+                      : "bg-yellow-500"
+                  }`}
+                >
+                  {complaint.status}
+                </span>
+              </p>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default SeeComplaints;

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { createComplaint } from "../lib/api";
-
+import { useNavigate } from "react-router-dom";
 const Registerco = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     ward: "",
@@ -54,8 +55,10 @@ const Registerco = () => {
     try {
       setSubmitting(true);
       await createComplaint(formData);
-      alert("Complaint submitted ✅");
 
+alert("Complaint submitted ✅");
+
+navigate("/register/See");
       // reset form
       setFormData({
         name: "",

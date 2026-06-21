@@ -29,3 +29,18 @@ export async function createComplaint({
 
   return data;
 }
+
+// NEW FUNCTION
+export async function getAllComplaints() {
+  const res = await fetch(`${API_URL}/api/v1`);
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(
+      data.message || "Failed to fetch complaints"
+    );
+  }
+
+  return data.data;
+}
